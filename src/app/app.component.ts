@@ -1,13 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { forkJoin } from 'rxjs';
+import { forkJoin, timeout } from 'rxjs';
+import { marked } from 'marked';
 import { OpenRouterService } from './services/open-router.service';
 import { environment } from '../environments/environment';
 
 export interface ResponseCard {
   model: string;
   content: string;
+  contentHtml: string;
+  durationMs: number;
 }
 
 export interface HistoryEntry {
@@ -57,6 +60,10 @@ export class AppComponent {
     this.prompt = example;
   }
 
+  copyToClipboard(content: string): void {
+    navigator.clipboard.writeText(content);
+  }
+
   onSubmit(): void {
     if (!this.prompt.trim() || this.loading) {
       return;
@@ -64,6 +71,7 @@ export class AppComponent {
 
     const temperature = this.useTemperature ? this.temperature : undefined;
     const currentPrompt = this.prompt.trim();
+    const startTime = performance.now();
 
     this.loading = true;
     this.errorMessage = '';
@@ -71,12 +79,18 @@ export class AppComponent {
     forkJoin([
       this.openRouterService.sendPrompt(currentPrompt, environment.openRouterApiKey, temperature),
       this.openRouterService.sendPrompt(currentPrompt, environment.openRouterApiKey, temperature)
-    ]).subscribe({
+    ]).pipe(timeout(30000)).subscribe({
       next: ([first, second]) => {
-        const responses: ResponseCard[] = [first, second].map((res) => ({
-          model: res.model,
-          content: res.choices[0]?.message?.content ?? ''
-        }));
+        const durationMs = Math.round(performance.now() - startTime);
+        const responses: ResponseCard[] = [first, second].map((res) => {
+          const content = res.choices[0]?.message?.content ?? '';
+          return {
+            model: res.model,
+            content,
+            contentHtml: marked.parse(content, { async: false }) as string,
+            durationMs
+          };
+        });
 
         this.lastResponses = responses;
         this.history.unshift({
@@ -88,7 +102,11 @@ export class AppComponent {
         this.loading = false;
       },
       error: (err) => {
-        this.errorMessage = err?.error?.error?.message || "Une erreur est survenue lors de l'appel à OpenRouter.";
+        if (err?.name === 'TimeoutError') {
+          this.errorMessage = "Le modèle n'a pas répondu en 30s (rate limit ou surcharge du routeur gratuit) — réessaie.";
+        } else {
+          this.errorMessage = err?.error?.error?.message || "Une erreur est survenue lors de l'appel à OpenRouter.";
+        }
         this.loading = false;
       }
     });

@@ -191,17 +191,89 @@ button.submit {
   border: 1px solid #e2e8f0;
   border-radius: 0.75rem;
 
-  .model {
-    font-size: 0.75rem;
-    color: #64748b;
-    margin: 0 0 0.5rem;
+  .result-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .model-badge {
+    font-size: 0.72rem;
+    font-family: "SFMono-Regular", Menlo, monospace;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    color: #334155;
+  }
+
+  .copy-button {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.4rem;
+    color: #475569;
+    cursor: pointer;
+
+    &:hover {
+      background: #f8fafc;
+    }
+  }
+
+  .result-meta {
+    font-size: 0.72rem;
+    font-family: "SFMono-Regular", Menlo, monospace;
+    color: #94a3b8;
+    margin: 0 0 0.6rem;
   }
 
   .content {
-    margin: 0;
-    font-size: 0.9rem;
-    line-height: 1.5;
-    white-space: pre-wrap;
+    font-size: 0.88rem;
+    line-height: 1.55;
+
+    :first-child {
+      margin-top: 0;
+    }
+
+    :last-child {
+      margin-bottom: 0;
+    }
+
+    p {
+      margin: 0.5rem 0;
+    }
+
+    h1, h2, h3 {
+      font-size: 0.95rem;
+      margin: 0.9rem 0 0.4rem;
+    }
+
+    ul, ol {
+      margin: 0.4rem 0;
+      padding-left: 1.2rem;
+    }
+
+    li {
+      margin: 0.2rem 0;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e2e8f0;
+      margin: 0.75rem 0;
+    }
+
+    code {
+      background: #f1f5f9;
+      padding: 0.1rem 0.3rem;
+      border-radius: 0.25rem;
+      font-size: 0.82rem;
+    }
   }
 }
 

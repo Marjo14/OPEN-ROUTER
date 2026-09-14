@@ -28,7 +28,7 @@ export class OpenRouterService {
     });
 
     const body: Record<string, unknown> = {
-      model: 'meta-llama/llama-3.1-8b-instruct:free',
+      model: 'openrouter/free',
       messages: [{ role: 'user', content: prompt }]
     };
 

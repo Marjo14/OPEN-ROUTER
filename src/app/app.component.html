@@ -44,7 +44,7 @@
     }
 
     <button type="button" class="submit" (click)="onSubmit()" [disabled]="loading || !prompt.trim()">
-      {{ loading ? 'Traitement en cours...' : 'Envoyer (2 réponses)' }}
+      {{ loading ? 'Traitement en cours...' : 'Envoyer' }}
     </button>
   </section>
 
@@ -56,8 +56,17 @@
     <section class="results">
       @for (response of lastResponses; track $index) {
         <article class="result-card">
-          <p class="model"><strong>Modèle :</strong> {{ response.model }}</p>
-          <p class="content">{{ response.content }}</p>
+          <header class="result-header">
+            <span class="model-badge">{{ response.model }}</span>
+            <button type="button" class="copy-button" (click)="copyToClipboard(response.content)">Copier</button>
+          </header>
+          <p class="result-meta">
+            {{ response.durationMs / 1000 | number: '1.2-2' }}s
+            @if (useTemperature) {
+              — Temp : {{ temperature.toFixed(2) }}
+            }
+          </p>
+          <div class="content" [innerHTML]="response.contentHtml"></div>
         </article>
       }
     </section>
